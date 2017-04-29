@@ -1,15 +1,18 @@
 package com.freeman.codeoasistask;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -29,6 +32,8 @@ public class ContactList extends AppCompatActivity {
     DatabaseHandler databaseHandler;
 
     ArrayList<HashMap<String, String>> contactList;
+
+    final String LOG_TAG = "myLogs";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,6 +140,18 @@ public class ContactList extends AppCompatActivity {
                         R.layout.list_item, new String[]{"name", "mobile"},
                         new int[]{R.id.name, R.id.mobile});
                 listView.setAdapter(listAdapter);
+
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String textView = ((TextView) view.findViewById(R.id.mobile)).getText().toString();
+
+                    Uri uri = Uri.parse("tel:" + textView);
+                    Intent intent = new Intent(Intent.ACTION_DIAL, uri);
+                    Intent chooser = Intent.createChooser(intent, "Choice ...");
+                    startActivity(chooser);
+                }
+            });
         }
     }
 }
