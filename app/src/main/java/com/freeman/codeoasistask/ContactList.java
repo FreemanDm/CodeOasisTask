@@ -30,6 +30,8 @@ public class ContactList extends AppCompatActivity {
     private static String url = "http://api.androidhive.info/contacts/";
 
     DatabaseHandler databaseHandler;
+    SwipeDetector swipeDetector = new SwipeDetector();
+
 
     ArrayList<HashMap<String, String>> contactList;
 
@@ -136,22 +138,33 @@ public class ContactList extends AppCompatActivity {
                 progressDialog.dismiss();
             }
 
-                ListAdapter listAdapter = new SimpleAdapter(ContactList.this, contactList,
-                        R.layout.list_item, new String[]{"name", "mobile"},
-                        new int[]{R.id.name, R.id.mobile});
-                listView.setAdapter(listAdapter);
+            final ListAdapter listAdapter = new SimpleAdapter(ContactList.this, contactList,
+                    R.layout.list_item, new String[]{"name", "mobile"},
+                    new int[]{R.id.name, R.id.mobile});
+            listView.setAdapter(listAdapter);
 
+            listView.setOnTouchListener(swipeDetector);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    String textView = ((TextView) view.findViewById(R.id.mobile)).getText().toString();
+                    if (swipeDetector.swipeDetected()){
+                        if (swipeDetector.getAction() == SwipeDetector.Action.CL){
+                            String phoneNumber = ((TextView) view.findViewById(R.id.mobile)).getText().toString();
 
-                    Uri uri = Uri.parse("tel:" + textView);
-                    Intent intent = new Intent(Intent.ACTION_DIAL, uri);
-                    Intent chooser = Intent.createChooser(intent, "Choice ...");
-                    startActivity(chooser);
+                            Uri uri = Uri.parse("tel:" + phoneNumber);
+                            Intent intent = new Intent(Intent.ACTION_DIAL, uri);
+                            Intent chooser = Intent.createChooser(intent, "Choice ...");
+                            startActivity(chooser);
+                            Log.e(LOG_TAG, "myLogs: no move");
+
+                        } else if (swipeDetector.getAction() == SwipeDetector.Action.RL){
+
+                        }
+                    }
+
                 }
             });
+
         }
     }
 }
